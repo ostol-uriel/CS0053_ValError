@@ -1,8 +1,9 @@
-tasks = []
+tasks = []  # initialize empty list titled tasks
 
 def addtask(task):
     tasks.append(task)
     print(f"✅ Task added: {task}\n")
+# addtask function appends the task to the tasks list and confirms addition
 
 def showTasks():
     if len(tasks) == 0:
@@ -12,7 +13,18 @@ def showTasks():
         for i, task in enumerate(tasks, 1):
             print(f"   {i}. {task}")
         print()  # extra newline for spacing
+# shows the status of the list whether it has an existing task or not
 
+def searchTasks(keyword):
+    found = [task for task in tasks if keyword.lower() in task.lower()]
+    if not found:
+        print(f"🔍 No tasks found containing '{keyword}'.\n")
+    else:
+        print(f"\n🔍 Tasks containing '{keyword}':")
+        for i, task in enumerate(found, 1):
+            print(f"   {i}. {task}")
+        print()
+######
 def removetask(tasknumber):
     if 0 < tasknumber <= len(tasks):
         removed = tasks.pop(tasknumber - 1)
@@ -29,6 +41,7 @@ def main():
         print("2. 📋 Show Tasks")
         print("3. 🗑️ Remove Task")
         print("4. 🚪 Exit")
+        print("5. 🔍 Search Task")   # 👈 NEW OPTION
         print("=" * 30)
 
         ch = input("👉 Enter choice: ")
@@ -49,8 +62,8 @@ def main():
         elif ch == "4":
             print("👋 Goodbye!")
             break
+        elif ch == "5":   # 👈 NEW OPTION
+            keyword = input("Enter keyword to search: ")
+            searchTasks(keyword)
         else:
-            print("⚠️ Wrong choice!!\n")
-
-if __name__ == "__main__":
-    main()
+            print("⚠️ Wrong choice!! Please choose from 1 - 5 :> \n")
