@@ -14,23 +14,19 @@ from datetime import datetime
 # 7. Save & Load Tasks (persistent storage)
 # 8. Clear All Tasks
 # 9. Exit
+# 10. View Statistics
 # ===============================
 
-# Global list to hold tasks
-# Each task is stored as a dictionary with keys:
-# "task", "done", "priority", "deadline"
 tasks = []
 
 
 # ---------- Save & Load ----------
 def savetasks():
-    """Save tasks to a JSON file so they persist between runs."""
     with open("tasks.json", "w") as f:
         json.dump(tasks, f)
 
 
 def loadtasks():
-    """Load tasks from JSON file (if it exists)."""
     global tasks
     try:
         with open("tasks.json", "r") as f:
@@ -41,7 +37,6 @@ def loadtasks():
 
 # ---------- Core Functions ----------
 def addtask(task, priority="Medium", deadline=None):
-    """Add a task with optional priority and deadline."""
     tasks.append({
         "task": task,
         "done": False,
@@ -53,12 +48,10 @@ def addtask(task, priority="Medium", deadline=None):
 
 
 def showTasks():
-    """Show all tasks, sorted by priority and deadline."""
     if not tasks:
         print("📋 No tasks yet.\n")
         return
 
-    # Priority order for sorting
     priority_order = {"High": 1, "Medium": 2, "Low": 3}
     sorted_tasks = sorted(tasks, key=lambda t: (
         priority_order.get(t["priority"], 4),
@@ -74,7 +67,6 @@ def showTasks():
 
 
 def searchTasks(keyword):
-    """Search for tasks containing a keyword."""
     found = [task for task in tasks if keyword.lower() in task["task"].lower()]
     if not found:
         print(f"🔍 No tasks found containing '{keyword}'.\n")
@@ -87,7 +79,6 @@ def searchTasks(keyword):
 
 
 def removetask(tasknumber):
-    """Remove a task by its number (from display order)."""
     if 0 < tasknumber <= len(tasks):
         removed = tasks.pop(tasknumber - 1)
         print(f"🗑️ Task removed: {removed['task']}\n")
@@ -97,7 +88,6 @@ def removetask(tasknumber):
 
 
 def markdone(tasknumber):
-    """Mark a task as completed."""
     if 0 < tasknumber <= len(tasks):
         tasks[tasknumber - 1]["done"] = True
         print(f"✅ Task marked as completed: {tasks[tasknumber - 1]['task']}\n")
@@ -107,7 +97,6 @@ def markdone(tasknumber):
 
 
 def edittask(tasknumber, newtask):
-    """Edit an existing task's text."""
     if 0 < tasknumber <= len(tasks):
         old = tasks[tasknumber - 1]["task"]
         tasks[tasknumber - 1]["task"] = newtask
@@ -118,7 +107,6 @@ def edittask(tasknumber, newtask):
 
 
 def clearAll():
-    """Clear all tasks from the list."""
     confirm = input("⚠️ Are you sure you want to clear ALL tasks? (y/n): ")
     if confirm.lower() == "y":
         tasks.clear()
@@ -128,9 +116,27 @@ def clearAll():
         print("❌ Clear all cancelled.\n")
 
 
+# ---------- New Feature: Statistics ----------
+def viewStatistics():
+    if not tasks:
+        print("📊 No tasks to analyze yet.\n")
+        return
+
+    total = len(tasks)
+    completed = sum(1 for t in tasks if t["done"])
+    pending = sum(1 for t in tasks if not t["done"])
+    not_finished = total - completed  # basically same as pending
+
+    print("\n📊 --- Task Statistics ---")
+    print(f"📌 Total tasks: {total}")
+    print(f"✅ Completed: {completed}")
+    print(f"🕒 Pending: {pending}")
+    print(f"❌ Not Finished: {not_finished}\n")
+
+
 # ---------- Main Menu ----------
 def main():
-    loadtasks()  # Load tasks when program starts
+    loadtasks()
 
     while True:
         print("=" * 40)
@@ -145,6 +151,7 @@ def main():
         print("7. 💾 Save Tasks")
         print("8. 🧹 Clear All Tasks")
         print("9. 🚪 Exit")
+        print("10. 📊 View Statistics")
         print("=" * 40)
 
         ch = input("👉 Enter choice: ")
@@ -153,7 +160,6 @@ def main():
             t = input("✏️ Enter task: ")
             p = input("🔺 Enter priority (High/Medium/Low): ") or "Medium"
             d = input("⏰ Enter deadline (YYYY-MM-DD) or leave blank: ") or None
-            # Validate deadline format
             if d:
                 try:
                     datetime.strptime(d, "%Y-%m-%d")
@@ -208,9 +214,11 @@ def main():
             print("👋 Goodbye! Stay productive.")
             break
 
+        elif ch == "10":
+            viewStatistics()
+
         else:
-            print("⚠️ Wrong choice!! Please choose from 1 - 9 :> \n")
+            print("⚠️ Wrong choice!! Please choose from 1 - 10 :> \n")
 
 
-# Run the program
 main()
